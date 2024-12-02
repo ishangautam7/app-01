@@ -4,6 +4,8 @@ import {BrowserRouter as Router, Route, Routes, Switch, BrowserRouter, Navigate}
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Home from './pages/Home'
+import VerifyUpdate from './pages/VerifyUpdate';
+import Update from './pages/Update'
 
 function App() {
   const isAuthenitcated = () =>{
@@ -25,6 +27,8 @@ function App() {
           <Route path='/login' element={<RedirectIfAuthenticated><Login/></RedirectIfAuthenticated>}/>
           <Route path='/register' element={<RedirectIfAuthenticated><Register/></RedirectIfAuthenticated>}/>
           <Route path='/home' element={<ProtectedRoute><Home/></ProtectedRoute>}/>
+          <Route path='/verify' element={<ProtectedRoute><VerifyUpdate /></ProtectedRoute>}/>
+          <Route path='/update' element={<ProtectedRoute><Update/></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </>

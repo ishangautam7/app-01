@@ -10,6 +10,8 @@ function Home(){
     }
     return(
         <div className="h-full w-full flex justify-center items-center">
+            <button className="p-6" onClick={()=>navigate('/verify')}>Verify</button>
+            <button className="p-6" onClick={()=>navigate('/update')}>Update</button>
             <button className="p-6" onClick={handleLogOut}>Logout</button>
         </div>
     )
