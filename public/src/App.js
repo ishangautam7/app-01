@@ -6,6 +6,8 @@ import Register from './pages/Register'
 import Home from './pages/Home'
 import VerifyUpdate from './pages/VerifyUpdate';
 import Update from './pages/Update'
+import ProtectedRoute from './utils/routeGuard';
+import Profile from './pages/Home/Profile';
 
 function App() {
   const isAuthenitcated = () =>{
@@ -16,7 +18,7 @@ function App() {
     return isAuthenitcated() ? <Navigate to= "/home" replace/> : children;
   }
 
-  const ProtectedRoute = ({children}) => {
+  const ProtectRoute = ({children}) => {
     return isAuthenitcated() ? children: <Navigate to= "/login" replace/>;
   }
 
@@ -26,9 +28,10 @@ function App() {
         <Routes>
           <Route path='/login' element={<RedirectIfAuthenticated><Login/></RedirectIfAuthenticated>}/>
           <Route path='/register' element={<RedirectIfAuthenticated><Register/></RedirectIfAuthenticated>}/>
-          <Route path='/home' element={<ProtectedRoute><Home/></ProtectedRoute>}/>
-          <Route path='/verify' element={<ProtectedRoute><VerifyUpdate /></ProtectedRoute>}/>
-          <Route path='/update' element={<ProtectedRoute><Update/></ProtectedRoute>} />
+          <Route path='/home' element={<ProtectRoute><Home/></ProtectRoute>}/>
+          <Route path='/profile' element={<ProtectRoute><Profile/></ProtectRoute>}/>
+          <Route path='/verify' element={<ProtectRoute><VerifyUpdate /></ProtectRoute>}/>
+          <Route path='/update' element={<ProtectRoute><ProtectedRoute><Update/></ProtectedRoute></ProtectRoute>} />
         </Routes>
       </BrowserRouter>
     </>

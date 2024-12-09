@@ -1,7 +1,6 @@
-import { useNavigate } from "react-router-dom";
-import NavigationBar from "./Home/Navigation";
+import NavigationBar from "./Navigation"
 
-function Home(){
+function Profile(){
     return(
         <div>
             <div className="w-full flex justify-center items-center">
@@ -11,4 +10,5 @@ function Home(){
     )
 }
 
-export default Home;
+
+export default Profile

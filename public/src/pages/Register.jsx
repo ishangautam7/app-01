@@ -36,8 +36,8 @@ function Login(){
                     username, email, password
                 })
                 if(data.status === true){
-                    toast.success("Account created successfully", toastOptions)
-                    navigate('/login')
+                    toast.success(data.msg, toastOptions)
+                    navigate('/login', {state: {successMessage:data.msg}})
                 }else{
                     toast.error(data.msg, toastOptions)
                 }

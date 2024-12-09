@@ -1,25 +1,32 @@
 import '../index.css';
 import '../App.css'
-import React, { useState } from "react"
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react"
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios"
 import { loginRoute } from "../utils/apiRoutes";
 import { toast, ToastContainer } from 'react-toastify'
 
+const toastOptions = {
+    position: 'bottom-right',
+    autoClose: 4000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "dark"
+}
+
 function Login(){
+    const location = useLocation()
     const navigate = useNavigate()
     const [values, setValues] = useState({
         username: "",
         password: ""
     })
 
-    const toastOptions = {
-        position: 'bottom-right',
-        autoClose: 4000,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark"
-    }
+    useEffect(()=>{
+        if(location.state?.successMessage){
+            toast.success(location.state.successMessage, toastOptions)
+        }
+    }, [location.state])
 
     const handleChange =(event) => {
         setValues({...values, [event.target.name]: event.target.value})
@@ -37,6 +44,7 @@ function Login(){
                     toast.error(data.msg, toastOptions)
                 }else if(data.status === true){
                     localStorage.setItem('login', JSON.stringify(data.user))
+                    localStorage.setItem('token', data.token)
                     toast.success("Logged in Successfully", toastOptions)
                     navigate('/home')
                 }
@@ -71,7 +79,7 @@ function Login(){
                             <input type="text" placeholder="Password" id="password" name="password" min="8" onChange={e => handleChange(e)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
                         </div>
                         
-                        <div className='pt-4 pb-8 flex flex-col items-cemter w-full'>
+                        <div className='pt-4 pb-8 flex flex-col items-center w-full'>
                             <div className="mt-6 w-full">
                                 <button type="submit" className='w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg'>Login</button>
                             </div>

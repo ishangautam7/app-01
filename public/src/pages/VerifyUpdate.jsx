@@ -34,22 +34,58 @@ function VerifyUpdate (){
         }return true
     }
 
-    const VerifyPassword = async (e) =>{
-        e.preventDefault()
-        if(handleSubmit()){
-            const {password} = values;
-            const cookie = localStorage.getItem("login")
-            const parsedCookie = JSON.parse(cookie)
-            const id = parsedCookie.id
-            const data = await axios.post(verifyPassword, {password, id})
-            if(data.data.status === true){
-                toast.success(data.data.msg, toastOptions)
-                navigate('/update')
-            }else if(data.data.status === false){
-                toast.error(data.data.msg, toastOptions)
+    const VerifyPassword = async (e) => {
+        e.preventDefault();
+        try {
+            if (handleSubmit()) {
+                const { password } = values;
+                const token = localStorage.getItem("token");
+                const cookie = localStorage.getItem("login");
+    
+                if (!cookie) {
+                    toast.error("User login information is missing!", toastOptions);
+                    return;
+                }
+    
+                let parsedCookie;
+                try {
+                    parsedCookie = JSON.parse(cookie);
+                } catch (error) {
+                    toast.error("Failed to parse user information.", toastOptions);
+                    return;
+                }
+    
+                const id = parsedCookie.id;
+                if (!id) {
+                    toast.error("User ID is missing in login information!", toastOptions);
+                    return;
+                }
+    
+                // Make API request
+                const { data } = await axios.post(
+                    verifyPassword,
+                    { password, id },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                console.log(data)
+                // Handle response
+                if (data.status === true) {
+                    navigate("/update", { state: { successMessage: data.msg } });
+                } else if (data.status === false) {
+                    toast.error(data.msg, toastOptions);
+                }
             }
+        } catch (err) {
+            console.error("Error verifying password:", err);
+            toast.error("An error occurred while verifying the password.", toastOptions);
         }
-    }
+    };
+    
 
     return (
         <div className="h-screen w-full flex flex-col justify-center items-center bg-gray-100">

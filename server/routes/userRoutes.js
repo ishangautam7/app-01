@@ -9,9 +9,9 @@ router.get('/test', (req, res)=>{
 
 router.post('/login', login)
 router.post('/register', register)
-router.post('/verifypassword', verifyPassword)
-router.post('/alldata', allData)
-router.put('/update', update)
+router.post('/verifypassword',verifyToken, verifyPassword)
+router.post('/alldata',verifyToken, allData)
+router.put('/update',verifyToken, update)
 // router.get('/getAllUsers/:Id', getAllUsers)
 
 module.exports = router;
