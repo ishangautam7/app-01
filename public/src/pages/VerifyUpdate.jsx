@@ -3,6 +3,7 @@ import { useState } from "react"
 import { verifyPassword } from "../utils/apiRoutes"
 import { toast, ToastContainer } from 'react-toastify'
 import { useNavigate } from "react-router-dom"
+import { jwtDecode } from 'jwt-decode';
 
 function VerifyUpdate (){
 
@@ -40,26 +41,20 @@ function VerifyUpdate (){
             if (handleSubmit()) {
                 const { password } = values;
                 const token = localStorage.getItem("token");
-                const cookie = localStorage.getItem("login");
     
-                if (!cookie) {
+                const user = jwtDecode(token)
+
+                if (!user) {
                     toast.error("User login information is missing!", toastOptions);
                     return;
                 }
     
-                let parsedCookie;
-                try {
-                    parsedCookie = JSON.parse(cookie);
-                } catch (error) {
-                    toast.error("Failed to parse user information.", toastOptions);
-                    return;
-                }
-    
-                const id = parsedCookie.id;
+                const id = user._id;
                 if (!id) {
                     toast.error("User ID is missing in login information!", toastOptions);
                     return;
                 }
+                console.log(id)
     
                 // Make API request
                 const { data } = await axios.post(
@@ -81,7 +76,7 @@ function VerifyUpdate (){
                 }
             }
         } catch (err) {
-            console.error("Error verifying password:", err);
+            // console.error("Error verifying password:", err);
             toast.error("An error occurred while verifying the password.", toastOptions);
         }
     };

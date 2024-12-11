@@ -5,6 +5,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios"
 import { loginRoute } from "../utils/apiRoutes";
 import { toast, ToastContainer } from 'react-toastify'
+import {jwtDecode} from "jwt-decode"
 
 const toastOptions = {
     position: 'bottom-right',
@@ -43,8 +44,12 @@ function Login(){
                 if(!data.status){
                     toast.error(data.msg, toastOptions)
                 }else if(data.status === true){
-                    localStorage.setItem('login', JSON.stringify(data.user))
-                    localStorage.setItem('token', data.token)
+                    // localStorage.setItem('login', JSON.stringify(data.user))
+                    const token = localStorage.setItem('token', data.accessToken)
+                    if(token){
+                        const user = jwtDecode(token)
+                        console.log(user)
+                    }
                     toast.success("Logged in Successfully", toastOptions)
                     navigate('/home')
                 }

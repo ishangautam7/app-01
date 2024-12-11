@@ -4,6 +4,7 @@ import axios from "axios"
 import { update } from "../utils/apiRoutes"
 import {toast, ToastContainer} from "react-toastify"
 import { useLocation, useNavigate } from "react-router-dom"
+import { jwtDecode } from "jwt-decode"
 
 const toastOptions = {
     position: 'bottom-right',
@@ -14,6 +15,8 @@ const toastOptions = {
 }
 
 function Update(){
+    const token = localStorage.getItem("token")
+    const user = jwtDecode(token)
     const navigate = useNavigate()
     const location = useLocation()
     const [values, setValues] = useState({
@@ -30,10 +33,7 @@ function Update(){
 
     const updateData = async(e) =>{
         e.preventDefault()
-        const loginData = localStorage.getItem("login")
-        const parsedId = JSON.parse(loginData)
-        const id = parsedId.id
-        const token = localStorage.getItem("token")
+        const id = user._id
         try{
             const {data} = await axios.put(update, {
                 id, ...values
@@ -43,8 +43,7 @@ function Update(){
                 }
             })
             if(data.status === true){
-                toast.success("Updated Successfully", toastOptions)
-                navigate('/home')
+                navigate('/home', { state: { successMessage: "Updated Successfully" } });
             }else{
                 toast.error(data.msg, toastOptions)
             }
@@ -54,16 +53,14 @@ function Update(){
     }
 
     const getInfoUser = async () =>{
-        const loginData = localStorage.getItem("login")
-        const parsedId = JSON.parse(loginData)
-        const id = parsedId.id
         const token = localStorage.getItem("token")
+        const user = jwtDecode(token)
+        const id = user._id
         const {data} = await axios.post(getInfo, {id}, {
             headers:{
                 Authorization: `Bearer ${token}`
             }
         })
-        console.log(data)
         if(data.status === true){
             setValues({
                 username: data.user.username,

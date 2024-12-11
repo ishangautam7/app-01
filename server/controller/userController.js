@@ -1,7 +1,7 @@
 const User = require("../models/userModel.js")
+const Token = require("../models/Token.js")
 const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken");
-const userModel = require("../models/userModel.js");
+const {generateAccessToken, generateRefreshJWT} = require("../controller/generateToken.js");
 
 module.exports.register = async (req, res, next) =>{
     try{
@@ -35,19 +35,36 @@ module.exports.login = async (req, res, next)=>{
         if(!passwordCheck){
             return res.json({status:false, msg: "Incorrect Password"})
         }
-        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {
-            expiresIn: '1h',
+        console.log(user)
+        const accessToken = generateAccessToken(user)
+        const refreshToken = generateRefreshJWT(user)
+        
+        const existingToken = await Token.findOne({ _userId: user._id })
+        if(!existingToken){
+            const newToken = new Token({_userId:user._id, refreshToken})
+            await newToken.save()
+            console.log("New token saved")
+        }else{
+            await Token.updateOne({_userId:user._id}, {
+                $push: {refreshToken}
+            })
+        }
+
+        return res.status(200).cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 30 * 1000
         })
-        return res.status(200).json({status:true, token, user:{id: user._id, username:user.username}})
+        .json({status:true, accessToken, user:{id: user._id, username:user.username}})
     }catch(err){
+        console.error(err);
         res.status(500).json({ status:false, msg: "Server Error" });
     }
 };
 
 module.exports.verifyPassword = async (req, res, next) => {
     try{
-        const {password, id} = req.body;
         console.log(req.body)
+        const {password, id} = req.body;
 
         const user = await User.findById(id)
         console.log(user)

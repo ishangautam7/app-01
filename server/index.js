@@ -2,6 +2,8 @@ const express= require("express")
 const mongoose = require("mongoose")
 const userRoutes = require("./routes/userRoutes")
 const cors = require('cors');
+const passport = require("passport")
+const cookieSession = require("cookie-session")
 
 const app = express()
 require('dotenv').config();
